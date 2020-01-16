@@ -1,11 +1,17 @@
-import { login, logout, getInfo } from '@/api/user'
+import { login, logout, getInfo, getMenu } from '@/api/user'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import { resetRouter } from '@/router'
 
 const state = {
   token: getToken(),
   name: '',
-  avatar: ''
+  avatar: '',
+  id: '',
+  code: '',
+  sex: '',
+  role_id: '',
+  roles: [],
+  menuList: []
 }
 
 const mutations = {
@@ -17,6 +23,24 @@ const mutations = {
   },
   SET_AVATAR: (state, avatar) => {
     state.avatar = avatar
+  },
+  SET_ID: (state, id) => {
+    state.id = id
+  },
+  SET_CODE: (state, code) => {
+    state.code = code
+  },
+  SET_SEX: (state, sex) => {
+    state.sex = sex
+  },
+  SET_ROLE_ID: (state, role_id) => {
+    state.role_id = role_id
+  },
+  SET_ROLES: (state, roles) => {
+    state.roles = roles
+  },
+  SET_MENU: (state, menuList) => {
+    state.menuList = menuList
   }
 }
 
@@ -35,21 +59,24 @@ const actions = {
       })
     })
   },
-
+  setRole({ commit }, roleId) {
+    commit('SET_ROLE_ID', roleId)
+  },
   // get user info
   getInfo({ commit, state }) {
     return new Promise((resolve, reject) => {
       getInfo(state.token).then(response => {
         const { data } = response
-
         if (!data) {
           reject('Verification failed, please Login again.')
         }
-
-        const { name, avatar } = data
-
-        commit('SET_NAME', name)
-        commit('SET_AVATAR', avatar)
+        const { userId, userCode, userName, sex, avatarPath, roleList } = data
+        commit('SET_ID', userId)
+        commit('SET_CODE', userCode)
+        commit('SET_NAME', userName)
+        commit('SET_SEX', sex)
+        commit('SET_AVATAR', avatarPath)
+        commit('SET_ROLES', roleList)
         resolve(data)
       }).catch(error => {
         reject(error)
@@ -57,11 +84,26 @@ const actions = {
     })
   },
 
+  getMenu({ commit }, roleId) {
+    return new Promise((resolve, reject) => {
+      getMenu(roleId).then(response => {
+        const { data } = response
+        resolve(data)
+      })
+    })
+  },
+
+  setMenu({ commit }, menuList) {
+    commit('SET_MENU', menuList)
+  },
+
   // user logout
   logout({ commit, state }) {
     return new Promise((resolve, reject) => {
-      logout(state.token).then(() => {
+      logout(state.token).then((response) => {
         commit('SET_TOKEN', '')
+        commit('SET_NAME', '')
+        commit('SET_ROLE_ID', '')
         removeToken()
         resetRouter()
         resolve()

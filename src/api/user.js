@@ -10,15 +10,29 @@ export function login(data) {
 
 export function getInfo(token) {
   return request({
-    url: '/user/info',
-    method: 'get',
+    url: '/userInfo',
+    method: 'post',
     params: { token }
+  })
+}
+
+export function getRole(token) {
+  return request({
+    url: '/'
+  })
+}
+
+export function getMenu(roleId) {
+  return request({
+    url: '/getMenuByRole',
+    method: 'post',
+    params: { 'roleId': roleId }
   })
 }
 
 export function logout() {
   return request({
-    url: '/user/logout',
+    url: '/logout',
     method: 'post'
   })
 }
