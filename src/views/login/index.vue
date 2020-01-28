@@ -55,7 +55,6 @@
 <script>
 import { validUsername } from '@/utils/validate'
 // import { request } from 'http'
-import request from '@/utils/request'
 
 export default {
   name: 'Login',

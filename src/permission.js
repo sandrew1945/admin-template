@@ -5,6 +5,7 @@ import NProgress from 'nprogress' // progress bar
 import 'nprogress/nprogress.css' // progress bar style
 import { getToken } from '@/utils/auth' // get token from cookie
 import getPageTitle from '@/utils/get-page-title'
+import { rFormat } from '@/router'
 
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
@@ -33,8 +34,18 @@ router.beforeEach(async(to, from, next) => {
           await store.dispatch('user/getInfo')
           if (store.getters.roles.length > 1) {
             next(`/role`)
+          } else if (store.getters.roles.length === 1) {
+            console.log('one =======> ' + store.getters.roles[0].roleId)
+            store.dispatch('user/setRole', store.getters.roles[0].roleId)
+            store.dispatch('user/getMenu', store.getters.roles[0].roleId).then(response => {
+              const routers = rFormat(response)
+              store.dispatch('user/setMenu', routers)
+              next(`/dashboard`)
+            })
+          } else {
+            // 跳转到无权限页面
+            next(`/401`)
           }
-          next()
         } catch (error) {
           // remove token and go to login page to re-login
           await store.dispatch('user/resetToken')

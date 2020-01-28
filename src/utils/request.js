@@ -2,6 +2,7 @@ import axios from 'axios'
 import { /* MessageBox,*/ Message } from 'element-ui'
 import store from '@/store'
 import { getToken } from '@/utils/auth'
+import qs from 'qs'
 // import { renderSync } from 'node-sass'
 
 // create an axios instance
@@ -22,6 +23,10 @@ service.interceptors.request.use(
       // please modify it according to the actual situation
       // config.headers['X-Token'] = getToken()
       config.headers['sid'] = getToken()
+    }
+    // fromdata提交
+    if (config.method === 'post') {
+      config.data = qs.stringify(config.data)
     }
     return config
   },

@@ -23,10 +23,11 @@ export function getRole(token) {
 }
 
 export function getMenu(roleId) {
+  const data = { 'roleId': roleId }
   return request({
     url: '/getMenuByRole',
     method: 'post',
-    params: { 'roleId': roleId }
+    data
   })
 }
 

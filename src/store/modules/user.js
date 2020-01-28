@@ -104,15 +104,24 @@ const actions = {
         commit('SET_TOKEN', '')
         commit('SET_NAME', '')
         commit('SET_ROLE_ID', '')
+        commit('SET_MENU', [])
+        commit('SET_ROLES', [])
         removeToken()
         resetRouter()
         resolve()
       }).catch(error => {
+        commit('SET_TOKEN', '')
+        commit('SET_NAME', '')
+        commit('SET_ROLE_ID', '')
+        commit('SET_MENU', [])
+        commit('SET_ROLES', [])
+        removeToken()
+        resetRouter()
+        resolve()
         reject(error)
       })
     })
   },
-
   // remove token
   resetToken({ commit }) {
     return new Promise(resolve => {
