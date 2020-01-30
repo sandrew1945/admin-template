@@ -35,7 +35,6 @@ router.beforeEach(async(to, from, next) => {
           if (store.getters.roles.length > 1) {
             next(`/role`)
           } else if (store.getters.roles.length === 1) {
-            console.log('one =======> ' + store.getters.roles[0].roleId)
             store.dispatch('user/setRole', store.getters.roles[0].roleId)
             store.dispatch('user/getMenu', store.getters.roles[0].roleId).then(response => {
               const routers = rFormat(response)

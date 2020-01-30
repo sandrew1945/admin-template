@@ -3,99 +3,30 @@
     <div class="filter-container">
       <el-input v-model="listQuery.userCode" placeholder="用户账号" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
       <el-input v-model="listQuery.userName" placeholder="用户姓名" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
-      <el-select v-model="listQuery.userStatus" placeholder="用户状态" clearable class="filter-item" style="width: 130px">
-        <el-option v-for="item in statusOptions" :key="item.key" :label="item.value" :value="item.key" />
-      </el-select>
+      <FixcodeSelect :type="'1001'" :model.sync="listQuery.userStatus" :placeholder="'用户状态'" :css="'width: 130px'" />
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
-        Search
+        查询
       </el-button>
       <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
-        Add
+        新增
       </el-button>
     </div>
-
-    <el-table
-      :key="tableKey"
-      v-loading="listLoading"
-      :data="list"
-      border
-      fit
-      highlight-current-row
-      style="width: 100%;"
-      @sort-change="sortChange"
-    >
-      <el-table-column label="序号" type="index" width="100px" align="center" />
-      <el-table-column label="账号" min-width="150px" property="userCode" align="center" />
-      <el-table-column label="姓名" min-width="150px" property="userName" align="center" />
-      <el-table-column label="角色" min-width="150px" property="roleName" align="center" />
-      <el-table-column label="状态" min-width="150px" property="userStatus" align="center">
-        <template slot-scope="{row}">
-          {{ row.userStatus | fixcodeFilter }}
-        </template>
-      </el-table-column>
-      <el-table-column label="性别" min-width="150px" property="sex" align="center" width="150px">
-        <template slot-scope="{row}">
-          {{ row.sex | fixcodeFilter }}
-        </template>
-      </el-table-column>
-      <el-table-column label="Actions" align="center" width="230" class-name="small-padding fixed-width">
+    <SimpleTable :list-loading="listLoading" :data="list" :columns="columns">
+      <el-table-column label="Actions" align="center" width="250px" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
           <el-button type="primary" size="mini" @click="handleUpdate(row)">
-            Edit
+            编辑
           </el-button>
           <el-button size="mini" type="danger" @click="deleteUser(row.userId)">
-            Delete
+            删除
+          </el-button>
+          <el-button type="warning" size="mini" @click="handleRoles(row)">
+            角色
           </el-button>
         </template>
       </el-table-column>
-    </el-table>
-
+    </SimpleTable>
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
-
-    <!-- <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
-        <el-form-item label="Type" prop="type">
-          <el-select v-model="temp.type" class="filter-item" placeholder="Please select">
-            <el-option v-for="item in calendarTypeOptions" :key="item.key" :label="item.value" :value="item.key" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="Date" prop="timestamp">
-          <el-date-picker v-model="temp.timestamp" type="datetime" placeholder="Please pick a date" />
-        </el-form-item>
-        <el-form-item label="Title" prop="title">
-          <el-input v-model="temp.title" />
-        </el-form-item>
-        <el-form-item label="Status">
-          <el-select v-model="temp.status" class="filter-item" placeholder="Please select">
-            <el-option v-for="item in calendarTypeOptions" :key="item" :label="item" :value="item" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="Imp">
-          <el-rate v-model="temp.importance" :colors="['#99A9BF', '#F7BA2A', '#FF9900']" :max="3" style="margin-top:8px;" />
-        </el-form-item>
-        <el-form-item label="Remark">
-          <el-input v-model="temp.remark" :autosize="{ minRows: 2, maxRows: 4}" type="textarea" placeholder="Please input" />
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">
-          Cancel
-        </el-button>
-        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">
-          Confirm
-        </el-button>
-      </div>
-    </el-dialog>
-
-    <el-dialog :visible.sync="dialogPvVisible" title="Reading statistics">
-      <el-table :data="pvData" border fit highlight-current-row style="width: 100%">
-        <el-table-column prop="key" label="Channel" />
-        <el-table-column prop="pv" label="Pv" />
-      </el-table>
-      <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="dialogPvVisible = false">Confirm</el-button>
-      </span>
-    </el-dialog> -->
   </div>
 </template>
 
@@ -103,12 +34,14 @@
 import { getUserList, deleteUser } from '@/api/usermanager'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
+import SimpleTable from '@/components/SimpleTable' // secondary package based on el-pagination
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
+import FixcodeSelect from '@/components/FixcodeSelect'
 import { getfixCodeDesc, getSelectOption } from '@/utils/fixcode'
 
 export default {
   name: 'ComplexTable',
-  components: { Pagination },
+  components: { SimpleTable, Pagination, FixcodeSelect },
   directives: { waves },
   filters: {
     statusFilter(status) {
@@ -129,7 +62,7 @@ export default {
   data() {
     return {
       tableKey: 0,
-      list: null,
+      list: [],
       total: 0,
       listLoading: true,
       listQuery: {
@@ -137,14 +70,21 @@ export default {
         limit: 20,
         userCode: undefined,
         userName: undefined,
-        userStatus: undefined
+        userStatus: ''
         // sort: '+id'
       },
+      columns: [
+        { header: '序号', type: 'index', width: '100px', dataIndex: '' },
+        { header: '账号', type: 'data', width: '', dataIndex: 'userCode' },
+        { header: '姓名', type: 'data', width: '', dataIndex: 'userName' },
+        { header: '角色', type: 'data', width: '', dataIndex: 'roleName' },
+        { header: '性别', type: 'fixcode', width: '', dataIndex: 'sex' },
+        { header: '状态', type: 'fixcode', width: '', dataIndex: 'userStatus' }
+      ],
       statusOptions: getSelectOption('1001', true),
       sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }],
       calendarTypeOptions: ['published', 'draft', 'deleted'],
       showReviewer: false,
-      dialogFormVisible: false,
       dialogStatus: '',
       textMap: {
         update: 'Edit',
@@ -235,6 +175,14 @@ export default {
       })
       const index = this.list.indexOf(row)
       this.list.splice(index, 1)
+    },
+    handleRoles(row) {
+      this.$router.push({
+        name: 'manageroles',
+        params: {
+          id: row.userId
+        }
+      })
     },
     formatJson(filterVal, jsonData) {
       return jsonData.map(v => filterVal.map(j => {

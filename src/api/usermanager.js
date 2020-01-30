@@ -55,3 +55,35 @@ export function deleteUser(data) {
     data
   })
 }
+
+export function getRelationRoles(userId) {
+  return request({
+    url: 'usermanager/queryRelationRoles',
+    method: 'get',
+    params: { 'userId': userId }
+  })
+}
+
+export function getUnRelationRoles(data) {
+  return request({
+    url: 'usermanager/queryUnRelationRoles',
+    method: 'post',
+    data
+  })
+}
+
+export function addRole(data) {
+  return request({
+    url: 'usermanager/createRelation',
+    method: 'post',
+    data
+  })
+}
+
+export function deleteRole(data) {
+  return request({
+    url: 'usermanager/deleteRoleRelation',
+    method: 'post',
+    data
+  })
+}

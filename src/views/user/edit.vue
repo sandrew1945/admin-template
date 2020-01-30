@@ -25,20 +25,16 @@
             <el-input v-model="user.userName" />
           </el-form-item>
           <el-form-item label="性别" prop="sex">
-            <el-select v-model="user.sex" class="filter-item" placeholder="Please select">
-              <el-option v-for="item in sexOptions" :key="item.key" :label="item.value" :value="item.key" />
-            </el-select>
+            <FixcodeSelect :type="'1002'" :model.sync="user.sex" :placeholder="'请选择性别'" :css="'width:300px'" />
           </el-form-item>
           <el-form-item label="生日" prop="birthday">
-            <el-date-picker v-model="user.birthday" type="date" placeholder="Please pick a date" />
+            <el-date-picker v-model="user.birthday" type="date" placeholder="Please pick a date" style="width:300px" />
           </el-form-item>
           <el-form-item label="密码" prop="password">
             <el-input v-model="user.password" type="password" />
           </el-form-item>
           <el-form-item label="状态" prop="userStatus">
-            <el-select v-model="user.userStatus" class="filter-item" placeholder="Please select">
-              <el-option v-for="item in statusOptions" :key="item.key" :label="item.value" :value="item.key" />
-            </el-select>
+            <FixcodeSelect :type="'1001'" :model.sync="user.userStatus" :placeholder="'请选择状态'" :css="'width:300px'" />
           </el-form-item>
           <el-form-item label="电话" prop="phone">
             <el-input v-model="user.phone" style="" placeholder="Please input phone" />
@@ -68,11 +64,11 @@ import { parseTime } from '@/utils'
 import { getSelectOption } from '@/utils/fixcode'
 import { getToken } from '@/utils/auth'
 import { createUser, fetchUserInfo, updateUserInfo } from '@/api/usermanager'
+import FixcodeSelect from '@/components/FixcodeSelect'
 
 export default {
   name: 'Edit',
-  filters: {
-  },
+  components: { FixcodeSelect },
   data() {
     return {
       headers: { sid: getToken() },
@@ -106,6 +102,7 @@ export default {
     }
   },
   created() {
+    // console.log(this.$router.options.routes[5].children[0].meta.file)
     this.operation = this.$route.params.opt
     if (this.operation && this.operation === 'edit') {
       this.rules.password[0].required = false
@@ -116,10 +113,10 @@ export default {
         this.user.phone = res.data.phone
         this.user.mobile = res.data.mobile
         this.user.email = res.data.email
-        this.user.sex = res.data.sex
+        this.user.sex = '' + res.data.sex
         this.user.birthday = res.data.birthday
         this.user.avatar = res.data.avatar
-        this.user.userStatus = res.data.userStatus
+        this.user.userStatus = '' + res.data.userStatus
         this.imageUrl = process.env.VUE_APP_BASE_API + '/generate/loadImage?filePath=' + res.data.avatar
       })
     }
