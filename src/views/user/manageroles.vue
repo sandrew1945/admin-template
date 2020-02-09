@@ -16,19 +16,7 @@
         <el-button type="default" icon="el-icon-caret-left" @click="cancel">返回</el-button>
       </el-form-item>
     </el-form>
-
-    <el-table
-      :key="tableKey"
-      v-loading="listLoading"
-      :data="list"
-      border
-      fit
-      highlight-current-row
-      style="width: 100%;"
-    >
-      <el-table-column label="序号" type="index" width="100px" align="center" />
-      <el-table-column label="角色代码" min-width="150px" property="roleCode" align="center" />
-      <el-table-column label="角色名称" min-width="150px" property="roleName" align="center" />
+    <SimpleTable :list-loading="listLoading" :data="list" :columns="columns">
       <el-table-column label="状态" min-width="150px" property="roleStatus" align="center" width="150px">
         <template slot-scope="{row}">
           {{ row.roleStatus | fixcodeFilter }}
@@ -41,7 +29,7 @@
           </el-button>
         </template>
       </el-table-column>
-    </el-table>
+    </SimpleTable>
     <!-- 新增角色modal -->
     <el-dialog :visible.sync="dialogFormVisible">
       <div class="filter-container">
@@ -49,29 +37,8 @@
         <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
           查询
         </el-button>
-        <!-- <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="addRole">
-          Add
-        </el-button> -->
       </div>
-
-      <el-table
-        :key="tableKey"
-        v-loading="listLoading"
-        :data="unrelationlist"
-        border
-        fit
-        highlight-current-row
-        style="width: 100%;"
-        @selection-change="handleSelectedRoles"
-      >
-        <el-table-column type="selection" width="50px" align="center" />
-        <el-table-column label="角色代码" min-width="150px" property="roleCode" align="center" />
-        <el-table-column label="角色名称" min-width="150px" property="roleName" align="center" />
-        <el-table-column label="状态" min-width="150px" property="roleStatus" align="center" width="150px">
-          <template slot-scope="{row}">
-            {{ row.roleStatus | fixcodeFilter }}
-          </template>
-        </el-table-column>
+      <SimpleTable :list-loading="listLoading" :data="unrelationlist" :columns="columns">
         <el-table-column label="操作" align="center" width="230" class-name="small-padding fixed-width">
           <template slot-scope="{row}">
             <el-button v-loading.fullscreen.lock="fullscreenLoading" size="mini" type="danger" @click="addRole(false, row.roleId)">
@@ -79,7 +46,7 @@
             </el-button>
           </template>
         </el-table-column>
-      </el-table>
+      </SimpleTable>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">
           关闭
@@ -96,9 +63,11 @@
 import { getRelationRoles, getUnRelationRoles, fetchUserInfo, addRole, deleteRole } from '@/api/usermanager'
 import waves from '@/directive/waves' // waves directive
 import { getfixCodeDesc } from '@/utils/fixcode'
+import SimpleTable from '@/components/SimpleTable'
 
 export default {
-  name: 'ComplexTable',
+  name: 'ManagerRoles',
+  components: { SimpleTable },
   directives: { waves },
   filters: {
     fixcodeFilter(fixcode) {
@@ -108,7 +77,7 @@ export default {
   data() {
     return {
       tableKey: 0,
-      list: null,
+      list: [],
       unrelationlist: null,
       total: 0,
       listLoading: true,
@@ -121,7 +90,18 @@ export default {
       userInfo: {},
       dialogFormVisible: false,
       selectedRoles: [],
-      fullscreenLoading: false
+      fullscreenLoading: false,
+      columns: [
+        { header: '序号', type: 'index', width: '100px', dataIndex: '' },
+        { header: '角色代码', type: 'data', width: '', dataIndex: 'roleCode' },
+        { header: '角色名称', type: 'data', width: '', dataIndex: 'roleName' }
+      ],
+      unrelationColumn: [
+        { header: '序号', type: 'selection', width: '100px', dataIndex: '' },
+        { header: '角色代码', type: 'data', width: '', dataIndex: 'roleCode' },
+        { header: '角色名称', type: 'data', width: '', dataIndex: 'roleName' },
+        { header: '状态', type: 'data', width: '', dataIndex: 'roleStatus' }
+      ]
     }
   },
   watch: {

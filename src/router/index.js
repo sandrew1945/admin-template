@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import UserManager from './usermanager/usermanager'
+import RoleManager from './rolemanager/rolemanager'
 
 Vue.use(Router)
 
@@ -65,7 +66,7 @@ export const constantRoutes = [
     }]
   },
   UserManager,
-
+  RoleManager,
   { path: '*', redirect: '/404', hidden: true }
 
 ]

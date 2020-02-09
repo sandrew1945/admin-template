@@ -26,7 +26,7 @@
         </template>
       </el-table-column>
     </SimpleTable>
-    <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
+    <pagination v-show="total>0" :total="total" :page.sync="listQuery.curPage" :limit.sync="listQuery.limit" @pagination="getList" />
   </div>
 </template>
 
@@ -34,30 +34,15 @@
 import { getUserList, deleteUser } from '@/api/usermanager'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
-import SimpleTable from '@/components/SimpleTable' // secondary package based on el-pagination
+import SimpleTable from '@/components/SimpleTable'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import FixcodeSelect from '@/components/FixcodeSelect'
-import { getfixCodeDesc, getSelectOption } from '@/utils/fixcode'
 
 export default {
-  name: 'ComplexTable',
+  name: 'UserManager',
   components: { SimpleTable, Pagination, FixcodeSelect },
   directives: { waves },
   filters: {
-    statusFilter(status) {
-      const statusMap = {
-        published: 'success',
-        draft: 'info',
-        deleted: 'danger'
-      }
-      return statusMap[status]
-    },
-    typeFilter(type) {
-      // return calendarTypeKeyValue[type]
-    },
-    fixcodeFilter(fixcode) {
-      return getfixCodeDesc(fixcode)
-    }
   },
   data() {
     return {
@@ -81,23 +66,7 @@ export default {
         { header: '性别', type: 'fixcode', width: '', dataIndex: 'sex' },
         { header: '状态', type: 'fixcode', width: '', dataIndex: 'userStatus' }
       ],
-      statusOptions: getSelectOption('1001', true),
-      sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }],
-      calendarTypeOptions: ['published', 'draft', 'deleted'],
-      showReviewer: false,
-      dialogStatus: '',
-      textMap: {
-        update: 'Edit',
-        create: 'Create'
-      },
-      dialogPvVisible: false,
-      pvData: [],
-      rules: {
-        type: [{ required: true, message: 'type is required', trigger: 'change' }],
-        timestamp: [{ type: 'date', required: true, message: 'timestamp is required', trigger: 'change' }],
-        title: [{ required: true, message: 'title is required', trigger: 'blur' }]
-      },
-      downloadLoading: false
+      sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }]
     }
   },
   created() {

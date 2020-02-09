@@ -38,13 +38,6 @@ export default {
       required: true,
       type: Array
     }
-  },
-  computed: {
-  },
-  methods: {
   }
 }
 </script>
-
-<style scoped>
-</style>

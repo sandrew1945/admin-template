@@ -11,23 +11,22 @@ export function login(data) {
 export function getInfo(token) {
   return request({
     url: '/userInfo',
-    method: 'post',
+    method: 'get',
     params: { token }
   })
 }
 
-export function getRole(token) {
-  return request({
-    url: '/'
-  })
-}
+// export function getRole(token) {
+//   return request({
+//     url: '/'
+//   })
+// }
 
 export function getMenu(roleId) {
-  const data = { 'roleId': roleId }
   return request({
     url: '/getMenuByRole',
-    method: 'post',
-    data
+    method: 'get',
+    params: { 'roleId': roleId }
   })
 }
 

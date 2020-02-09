@@ -25,7 +25,7 @@ service.interceptors.request.use(
       config.headers['sid'] = getToken()
     }
     // fromdata提交
-    if (config.method === 'post') {
+    if (config.method === 'post' && config.contentType !== 'application/json') {
       config.data = qs.stringify(config.data)
     }
     return config

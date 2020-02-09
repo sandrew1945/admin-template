@@ -28,7 +28,7 @@
             <FixcodeSelect :type="'1002'" :model.sync="user.sex" :placeholder="'请选择性别'" :css="'width:300px'" />
           </el-form-item>
           <el-form-item label="生日" prop="birthday">
-            <el-date-picker v-model="user.birthday" type="date" placeholder="Please pick a date" style="width:300px" />
+            <el-date-picker v-model="user.birthday" type="date" format="yyyy-MM-dd" value-format="yyyy-MM-dd" placeholder="Please pick a date" style="width:300px" />
           </el-form-item>
           <el-form-item label="密码" prop="password">
             <el-input v-model="user.password" type="password" />
@@ -61,7 +61,6 @@
 
 <script>
 import { parseTime } from '@/utils'
-import { getSelectOption } from '@/utils/fixcode'
 import { getToken } from '@/utils/auth'
 import { createUser, fetchUserInfo, updateUserInfo } from '@/api/usermanager'
 import FixcodeSelect from '@/components/FixcodeSelect'
@@ -74,8 +73,6 @@ export default {
       headers: { sid: getToken() },
       actionUrl: process.env.VUE_APP_BASE_API + '/generate/uploadImg',
       imageUrl: '',
-      statusOptions: getSelectOption('1001'),
-      sexOptions: getSelectOption('1002'),
       operation: '',
       fullscreenLoading: false,
       user: {
